@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Tarea</title>
+  <script>
+    const createTask = () => {
+    const description = document.getElementById("description").value;
+
+    fetch("http://localhost:5000/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ description }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(`Estas es la lista de tareas ${data.tasks.map((task) => task.description)}`);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  </script>
+</head>
+<body>
+  <h1>Crear Tarea</h1>
+
+    <label for="description">Escribe una nueva tarea</label>
+    <input type="text" id="description" name="description" />
+    <button onclick="createTask()">Crear Tarea</button>
+</body>
+</html>
