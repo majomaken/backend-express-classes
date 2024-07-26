@@ -1,0 +1,24 @@
+{
+  "name": "todo-list-api",
+  "version": "1.0.0",
+  "description": "This is a todo list app ",
+  "main": "/src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js"
+  },
+  "keywords": [
+    "api",
+    "todo-list",
+    "webapp"
+  ],
+  "author": "majomaken",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
