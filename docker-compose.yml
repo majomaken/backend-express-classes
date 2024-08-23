@@ -1,0 +1,12 @@
+services:
+  mongodb:
+    image: mongo:latest # Usa la última versión de mongoDB
+    container_name: mi-mongodb
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: Attractor3-Fretful-Yonder-Antiviral
+    volumes:
+      - ./data:/data/db # Persistir los datos en la carpeta local "data" del contenedor
