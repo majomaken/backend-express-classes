@@ -19,10 +19,28 @@ app.use(express.json());
 //   response.json({ tasks: results.rows });
 // });
 
-app.get("/tasks", async (request, response) => {
+app.get("/tasks", async (__, response) => {
   try {
-    const tasks = await tasksCollection.find().toArray()
-    response.status(200).json({ tasks })
+    const results = await postgresClient.query(
+          "SELECT tasks.*, users.name FROM tasks JOIN users ON tasks.user_id = users.id ORDER BY tasks.id ASC"
+        )
+
+    const postgresTasks = results.rows
+    const mongoTasks = await tasksCollection.find().toArray()
+
+    const formattedMongoTasks = mongoTasks.map(task => {
+      return {
+        id: task._id,
+        description: task.description,
+        status: task.status,
+        userId: task.userId,
+      }
+    })
+
+    const tasks = [...formattedMongoTasks, ...postgresTasks]
+
+    response.status(200).json({ tasks });
+
   } catch (error) {
     console.error("Error al obtener las tareas: ", error);
     response.status(500).json({ error: "Error al obtener las tareas" });
@@ -80,19 +98,39 @@ app.post("/tasks", async (request, response) => {
   }
 })
 
+// app.put("/tasks/:id", async (request, response) => {
+//   const taskId = parseInt(request.params.id);
+
+//   // const updateBody = {
+//   //   userId: request.body.userId,
+//   // }
+
+//   const results = await postgresClient.query(
+//     "UPDATE tasks SET user_id = $1 WHERE id = $2 RETURNING *",
+//     [request.body.userId, taskId]
+//   )
+
+//   response.status(200).json(results.rows[0]);
+// });
+
 app.put("/tasks/:id", async (request, response) => {
-  const taskId = parseInt(request.params.id);
+  try {
+    const taskId = request.params.id;
 
-  // const updateBody = {
-  //   userId: request.body.userId,
-  // }
+  const updateBody = {
+    userId: request.body.userId,
+    description: request.body.description,
+  }
+  console.log('updateBody', updateBody)
+  console.log('taskId', taskId)
 
-  const results = await postgresClient.query(
-    "UPDATE tasks SET user_id = $1 WHERE id = $2 RETURNING *",
-    [request.body.userId, taskId]
-  )
-
-  response.status(200).json(results.rows[0]);
+  const results = await tasksCollection.updateOne({ _id: taskId }, { $set: request.body })
+  console.log("Log de results:", results)
+  response.status(200).json({results});
+  } catch (error) {
+    console.error("Error updating task: ", error);
+    response.status(500).json({ error: "Error al actualizar la tarea" });
+  }
 });
 
 app.delete("/tasks/:id", async (request, response) => {
