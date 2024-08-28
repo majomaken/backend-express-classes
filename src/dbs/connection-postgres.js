@@ -16,11 +16,11 @@ const connectDb = async () => {
 connectDb();
 
 const postgresClient = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "my-first-db",
-  password: "HfwTHbIwj1b4D7YkMK",
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT
 });
 
 postgresClient.query("SELECT NOW()", (error, response) => {
